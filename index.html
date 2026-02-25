@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geovisor Electoral — Cárdenas, Tabasco</title>
+
+  <!-- MapLibre GL JS -->
+  <link href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+
+  <!-- Observable Plot -->
+  <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/dist/plot.umd.min.js"></script>
+
+  <link rel="stylesheet" href="src/css/estilos.css" />
+</head>
+<body>
+  <header>
+    <h1>Geovisor Electoral — Cárdenas, Tabasco</h1>
+  </header>
+
+  <main>
+    <div id="mapa"></div>
+    <aside id="panel-lateral">
+      <div id="graficas"></div>
+    </aside>
+  </main>
+
+  <script type="module" src="src/js/main.js"></script>
+</body>
+</html>
