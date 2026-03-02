@@ -80,7 +80,7 @@ map.on('load', async () => {
 
   construirSelectorVariables(estado.features);
   renderizarLeyenda(document.getElementById('leyenda'), 'ganador', estado.features);
-  renderGraficaAgregada(null, estado.features);
+  renderGraficaAgregada(estado.features);
   iniciarEventosMapa();
 });
 
@@ -201,6 +201,12 @@ function valorTooltip(props) {
   return `${cfg.label}: <strong>${val}</strong>`;
 }
 
+// ─── Botón reset de vista ─────────────────────────────────────────────────
+const VISTA_INICIAL = { center: [-93.8, 18.1], zoom: 9.7 };
+document.getElementById('btn-reset-vista').addEventListener('click', () => {
+  map.flyTo({ ...VISTA_INICIAL, duration: 800 });
+});
+
 // ─── Botón cierre del popup de sección ───────────────────────────────────
 document.getElementById('popup-cerrar').addEventListener('click', () => {
   limpiarGraficaSeccion();
@@ -227,7 +233,7 @@ document.querySelectorAll('.btn-capa').forEach(btn => {
 
     construirSelectorVariables(estado.features); // reconstruye lista + ajusta variable activa
     aplicarPintura();
-    renderGraficaAgregada(null, estado.features);
+    renderGraficaAgregada(estado.features);
     limpiarGraficaSeccion();
   });
 });

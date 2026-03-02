@@ -33,31 +33,107 @@ function datosPartidos(propsList) {
     .sort((a, b) => b.votos - a.votos);
 }
 
-function barplotPartidos(datos, ancho) {
-  return Plot.plot({
-    width: ancho ?? 270,
+function renderSeccionesGanadas(container, features) {
+  container.innerHTML = '';
+
+  const conteos = {};
+  for (const f of features) {
+    const g = f.properties.ganador;
+    if (g) conteos[g] = (conteos[g] ?? 0) + 1;
+  }
+
+  const datos = Object.entries(conteos)
+    .map(([partido, secciones]) => ({ partido, etiqueta: ETIQUETA[partido] ?? partido, secciones }))
+    .sort((a, b) => b.secciones - a.secciones);
+
+  const titulo = document.createElement('p');
+  titulo.className = 'subtitulo-grafica';
+  titulo.textContent = 'Secciones ganadas por partido';
+  container.appendChild(titulo);
+
+  const chart = Plot.plot({
+    width: container.clientWidth || 270,
+    height: datos.length * 26 + 36,
     marginLeft: 68,
     marginRight: 10,
-    marginTop: 8,
-    marginBottom: 24,
-    x: { label: 'Votos', tickFormat: d => d >= 1000 ? (d / 1000).toFixed(0) + 'k' : d },
+    marginTop: 4,
+    marginBottom: 28,
+    x: { label: 'Secciones', grid: true },
     y: { label: null },
     marks: [
       Plot.barX(datos, {
-        x: 'votos',
+        x: 'secciones',
         y: 'etiqueta',
         fill: d => COLORES_PARTIDO[d.partido] ?? '#888',
         sort: { y: '-x' },
         tip: true,
-        title: d => `${d.etiqueta}: ${fmt(d.votos)} votos`,
+        title: d => `${d.etiqueta}: ${d.secciones} secciones`,
       }),
       Plot.ruleX([0], { stroke: '#ccc' }),
     ],
   });
+  container.appendChild(chart);
 }
 
 function metricaHTML(valor, etiqueta) {
   return `<div class="metrica"><span class="metrica-valor">${valor}</span><span class="metrica-etiqueta">${etiqueta}</span></div>`;
+}
+
+function renderTablaPartidos(container, datos, totalVotos, votosNulos, candNoReg) {
+  container.innerHTML = '';
+  if (!datos.length) return;
+
+  const tabla = document.createElement('table');
+  tabla.className = 'tabla-partidos';
+  tabla.innerHTML = `
+    <thead>
+      <tr>
+        <th>Partido / concepto</th>
+        <th class="num">Votos</th>
+        <th class="num">%</th>
+      </tr>
+    </thead>`;
+
+  const tbody = document.createElement('tbody');
+
+  // Filas de partido
+  for (const d of datos) {
+    const pct = totalVotos > 0 ? (d.votos / totalVotos * 100).toFixed(1) : '—';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="tabla-swatch" style="background:${COLORES_PARTIDO[d.partido]}"></span>${d.etiqueta}</td>
+      <td class="num">${fmt(d.votos)}</td>
+      <td class="num">${pct} %</td>`;
+    tbody.appendChild(tr);
+  }
+
+  // Fila separadora + conceptos no partidistas
+  const filasSec = [];
+  if (candNoReg > 0) filasSec.push(['Cand. no reg.', candNoReg]);
+  if (votosNulos  > 0) filasSec.push(['Votos nulos',  votosNulos]);
+
+  for (const [label, votos] of filasSec) {
+    const pct = totalVotos > 0 ? (votos / totalVotos * 100).toFixed(1) : '—';
+    const tr = document.createElement('tr');
+    tr.className = 'fila-secundaria';
+    tr.innerHTML = `
+      <td><span class="tabla-swatch swatch-gris"></span>${label}</td>
+      <td class="num">${fmt(votos)}</td>
+      <td class="num">${pct} %</td>`;
+    tbody.appendChild(tr);
+  }
+
+  // Fila total
+  const trTotal = document.createElement('tr');
+  trTotal.className = 'fila-total';
+  trTotal.innerHTML = `
+    <td>Total votos</td>
+    <td class="num">${fmt(totalVotos)}</td>
+    <td class="num">100 %</td>`;
+  tbody.appendChild(trTotal);
+
+  tabla.appendChild(tbody);
+  container.appendChild(tabla);
 }
 
 // ─── API pública ──────────────────────────────────────────────────────────────
@@ -67,7 +143,7 @@ function metricaHTML(valor, etiqueta) {
  * @param {HTMLElement} container  #panel-agregados
  * @param {Array}       features   todas las features del GeoJSON activo
  */
-export function renderGraficaAgregada(container, features) {
+export function renderGraficaAgregada(features) {
   const props = features.map(f => f.properties);
 
   // Métricas
@@ -83,11 +159,17 @@ export function renderGraficaAgregada(container, features) {
     metricaHTML((particip * 100).toFixed(1) + ' %', 'Participación') +
     metricaHTML(pct(votosNulos, totalVotos), 'Votos nulos');
 
-  // Barplot
-  const grafDiv = document.getElementById('grafica-agregada');
-  grafDiv.innerHTML = '';
+  // Secciones ganadas por partido
+  renderSeccionesGanadas(document.getElementById('grafica-agregada'), features);
+
+  // Tabla de votos por partido
   const datos = datosPartidos(props);
-  grafDiv.appendChild(barplotPartidos(datos, grafDiv.clientWidth || 270));
+  const votosNulosTotal = props.reduce((s, p) => s + (p.votos_nulos  ?? 0), 0);
+  const candNoRegTotal  = props.reduce((s, p) => s + (p.cand_no_reg  ?? 0), 0);
+  renderTablaPartidos(
+    document.getElementById('tabla-partidos'),
+    datos, totalVotos, votosNulosTotal, candNoRegTotal,
+  );
 }
 
 /**
@@ -131,11 +213,31 @@ export function renderGraficaSeccion(feature, todosFeatures) {
     </div>`
   );
 
-  // Barplot de la sección
+  // Barplot de votos de la sección
   const grafDiv = document.getElementById('popup-sec-grafica');
   grafDiv.innerHTML = '';
   const datos = datosPartidos([p]);
-  grafDiv.appendChild(barplotPartidos(datos, 225));
+  const chart = Plot.plot({
+    width: 225,
+    height: datos.length * 22 + 32,
+    marginLeft: 60,
+    marginRight: 8,
+    marginTop: 4,
+    marginBottom: 24,
+    x: { label: 'Votos', tickFormat: d => d >= 1000 ? (d / 1000).toFixed(0) + 'k' : d },
+    y: { label: null },
+    marks: [
+      Plot.barX(datos, {
+        x: 'votos', y: 'etiqueta',
+        fill: d => COLORES_PARTIDO[d.partido] ?? '#888',
+        sort: { y: '-x' },
+        tip: true,
+        title: d => `${d.etiqueta}: ${fmt(d.votos)} votos`,
+      }),
+      Plot.ruleX([0], { stroke: '#ccc' }),
+    ],
+  });
+  grafDiv.appendChild(chart);
 }
 
 /**

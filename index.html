@@ -19,27 +19,35 @@
     <span>Proceso Electoral Local Ordinario 2023-2024</span>
   </header>
 
-  <div id="selector-capas">
-    <span class="selector-label">Selector de Capas</span>
-    <div class="btn-grupo">
-      <button class="btn-capa activo" data-capa="gubernatura">Gubernatura</button>
-      <button class="btn-capa" data-capa="diputaciones">Diputaciones</button>
-      <button class="btn-capa" data-capa="ayuntamiento">Ayuntamiento</button>
-    </div>
-  </div>
-
   <main>
 
-    <!-- Panel izquierdo: selector de variable a mapear -->
-    <aside id="panel-variables">
-      <p class="panel-titulo">Variable a mapear</p>
-      <div id="lista-variables"></div>
-      <p class="panel-titulo simbologia-titulo">Simbología</p>
-      <div id="leyenda"></div>
+    <!-- Panel izquierdo: estadísticos generales -->
+    <aside id="panel-estadisticos">
+      <section id="panel-agregados">
+        <h3 class="panel-titulo">Estadísticos generales</h3>
+        <div id="metricas-agregadas"></div>
+        <div id="grafica-agregada"></div>
+        <div id="tabla-partidos"></div>
+      </section>
     </aside>
 
     <!-- Mapa central -->
     <div id="mapa">
+      <!-- Botón reset de vista -->
+      <button id="btn-reset-vista" title="Volver a vista inicial">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+          <polyline points="9 21 9 13 15 13 15 21"/>
+        </svg>
+        Vista inicial
+      </button>
+
+      <!-- Leyenda flotante -->
+      <div id="leyenda-mapa">
+        <p class="leyenda-mapa-titulo">Simbología</p>
+        <div id="leyenda"></div>
+      </div>
+
       <!-- Popup de sección (overlay sobre el mapa) -->
       <div id="popup-seccion" class="oculto">
         <div class="popup-sec-header">
@@ -51,13 +59,16 @@
       </div>
     </div>
 
-    <!-- Panel derecho: estadísticos generales -->
-    <aside id="panel-estadisticos">
-      <section id="panel-agregados">
-        <h3 class="panel-titulo">Estadísticos generales</h3>
-        <div id="metricas-agregadas"></div>
-        <div id="grafica-agregada"></div>
-      </section>
+    <!-- Panel derecho: controles del mapa -->
+    <aside id="panel-variables">
+      <p class="panel-titulo">Tipo de elección</p>
+      <div class="btn-grupo-vertical">
+        <button class="btn-capa activo" data-capa="gubernatura">Gubernatura</button>
+        <button class="btn-capa" data-capa="diputaciones">Diputaciones</button>
+        <button class="btn-capa" data-capa="ayuntamiento">Ayuntamiento</button>
+      </div>
+      <p class="panel-titulo simbologia-titulo">Variable a mapear</p>
+      <div id="lista-variables"></div>
     </aside>
 
   </main>
