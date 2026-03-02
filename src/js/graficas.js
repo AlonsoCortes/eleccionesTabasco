@@ -210,6 +210,7 @@ export function renderGraficaSeccion(feature, todosFeatures) {
     `<div class="metrica comparacion">
       <span class="metrica-valor ${clase}">${signo}${diffPp} pp</span>
       <span class="metrica-etiqueta">vs. municipio</span>
+      <span class="metrica-nota">dif. en participación</span>
     </div>`
   );
 
