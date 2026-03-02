@@ -9,21 +9,57 @@
   <link href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" rel="stylesheet" />
   <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
 
-  <!-- Observable Plot -->
-  <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/dist/plot.umd.min.js"></script>
 
   <link rel="stylesheet" href="src/css/estilos.css" />
 </head>
 <body>
-  <header>
-    <h1>Geovisor Electoral — Cárdenas, Tabasco</h1>
+
+  <header id="encabezado">
+    <strong>Municipio de Cárdenas, Tabasco</strong>
+    <span>Proceso Electoral Local Ordinario 2023-2024</span>
   </header>
 
+  <div id="selector-capas">
+    <span class="selector-label">Selector de Capas</span>
+    <div class="btn-grupo">
+      <button class="btn-capa activo" data-capa="gubernatura">Gubernatura</button>
+      <button class="btn-capa" data-capa="diputaciones">Diputaciones</button>
+      <button class="btn-capa" data-capa="ayuntamiento">Ayuntamiento</button>
+    </div>
+  </div>
+
   <main>
-    <div id="mapa"></div>
-    <aside id="panel-lateral">
-      <div id="graficas"></div>
+
+    <!-- Panel izquierdo: selector de variable a mapear -->
+    <aside id="panel-variables">
+      <p class="panel-titulo">Variable a mapear</p>
+      <div id="lista-variables"></div>
+      <p class="panel-titulo simbologia-titulo">Simbología</p>
+      <div id="leyenda"></div>
     </aside>
+
+    <!-- Mapa central -->
+    <div id="mapa">
+      <!-- Popup de sección (overlay sobre el mapa) -->
+      <div id="popup-seccion" class="oculto">
+        <div class="popup-sec-header">
+          <span>Sección <strong id="popup-sec-id">—</strong></span>
+          <button id="popup-cerrar" title="Cerrar">×</button>
+        </div>
+        <div id="popup-sec-metricas"></div>
+        <div id="popup-sec-grafica"></div>
+      </div>
+    </div>
+
+    <!-- Panel derecho: estadísticos generales -->
+    <aside id="panel-estadisticos">
+      <section id="panel-agregados">
+        <h3 class="panel-titulo">Estadísticos generales</h3>
+        <div id="metricas-agregadas"></div>
+        <div id="grafica-agregada"></div>
+      </section>
+    </aside>
+
   </main>
 
   <script type="module" src="src/js/main.js"></script>

@@ -1,41 +1,430 @@
-* {
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* ── Paleta ──────────────────────────────────────────────────────────────── */
+:root {
+  --azul-oscuro:  #1e2d45;
+  --azul-medio:   #2a4a7f;
+  --azul-claro:   #4a7abf;
+  --azul-hover:   #3a5fa0;
+  --gris-fondo:   #f0f3f7;
+  --gris-panel:   #f7f9fc;
+  --gris-borde:   #d0d7e3;
+  --gris-texto:   #5a6a80;
+  --texto:        #1a2535;
+  --blanco:       #ffffff;
+  --acento:       #2a6fac;
+}
+
+/* ── Body ────────────────────────────────────────────────────────────────── */
 body {
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  color: var(--texto);
   display: flex;
   flex-direction: column;
   height: 100vh;
+  overflow: hidden;
 }
 
-header {
-  padding: 0.75rem 1rem;
-  background: #1a1a2e;
-  color: #fff;
+/* ── Header ──────────────────────────────────────────────────────────────── */
+#encabezado {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.55rem 1rem;
+  background: var(--azul-oscuro);
+  color: var(--blanco);
+  flex-shrink: 0;
 }
 
-header h1 {
-  font-size: 1rem;
+#encabezado strong {
+  font-size: 0.95rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
+#encabezado span {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+/* ── Selector de capas ───────────────────────────────────────────────────── */
+#selector-capas {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.35rem 1rem;
+  background: var(--gris-fondo);
+  border-bottom: 1px solid var(--gris-borde);
+  flex-shrink: 0;
+}
+
+.selector-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gris-texto);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.btn-grupo {
+  display: flex;
+  gap: 0;
+}
+
+.btn-capa {
+  padding: 0.3rem 1.1rem;
+  border: 1px solid var(--gris-borde);
+  border-right: none;
+  background: var(--blanco);
+  color: var(--texto);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-capa:first-child { border-radius: 4px 0 0 4px; }
+.btn-capa:last-child  { border-radius: 0 4px 4px 0; border-right: 1px solid var(--gris-borde); }
+
+.btn-capa:hover {
+  background: var(--gris-fondo);
+  color: var(--azul-medio);
+}
+
+.btn-capa.activo {
+  background: var(--azul-medio);
+  color: var(--blanco);
+  border-color: var(--azul-medio);
+}
+
+/* ── Main (3 columnas) ───────────────────────────────────────────────────── */
 main {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-#mapa {
-  flex: 1;
+/* ── Panel izquierdo: variables ──────────────────────────────────────────── */
+#panel-variables {
+  width: 190px;
+  flex-shrink: 0;
+  background: var(--gris-panel);
+  border-right: 1px solid var(--gris-borde);
+  padding: 0.75rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-#panel-lateral {
-  width: 320px;
+/* ── Panel derecho: estadísticos ─────────────────────────────────────────── */
+#panel-estadisticos {
+  width: 290px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--gris-borde);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#panel-agregados {
+  flex: 1;
   overflow-y: auto;
-  padding: 1rem;
-  background: #f8f8f8;
-  border-left: 1px solid #ddd;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── Mapa ────────────────────────────────────────────────────────────────── */
+#mapa {
+  flex: 1;
+  position: relative;
+}
+
+/* ── Popup de sección ────────────────────────────────────────────────────── */
+#popup-seccion {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1rem;
+  z-index: 10;
+  width: 255px;
+  background: var(--blanco);
+  border: 1px solid var(--azul-borde);
+  border-radius: 6px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+  padding: 0.7rem;
+  font-size: 0.8rem;
+}
+
+#popup-seccion.oculto {
+  display: none;
+}
+
+.popup-sec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--gris-borde);
+}
+
+.popup-sec-header span {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--azul-oscuro);
+}
+
+#popup-cerrar {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--gris-texto);
+  padding: 0 0.1rem;
+}
+
+#popup-cerrar:hover {
+  color: var(--azul-oscuro);
+}
+
+#popup-sec-metricas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+#popup-sec-metricas .metrica {
+  flex: 1 1 calc(50% - 0.35rem);
+  min-width: 80px;
+}
+
+/* ── Títulos de panel ────────────────────────────────────────────────────── */
+.panel-titulo {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gris-texto);
+  border-bottom: 1px solid var(--gris-borde);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.2rem;
+}
+
+h3.panel-titulo {
+  font-size: 0.72rem;
+}
+
+/* ── Controles de variable ───────────────────────────────────────────────── */
+#lista-variables {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.var-grupo-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gris-texto);
+  margin-top: 0.65rem;
+  margin-bottom: 0.2rem;
+  padding-left: 0.1rem;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--texto);
+  padding: 0.22rem 0;
+}
+
+/* Radio cuadrado personalizado */
+.radio-label input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid var(--gris-borde);
+  border-radius: 2px;
+  background: var(--blanco);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.radio-label input[type="radio"]:checked {
+  background: var(--azul-medio);
+  border-color: var(--azul-medio);
+}
+
+.radio-label input[type="radio"]:checked::after {
+  content: '';
+  display: block;
+  width: 5px;
+  height: 5px;
+  background: var(--blanco);
+  border-radius: 1px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.radio-label:hover input[type="radio"]:not(:checked) {
+  border-color: var(--azul-claro);
+}
+
+/* ── Simbología ──────────────────────────────────────────────────────────── */
+.simbologia-titulo {
+  margin-top: 0.75rem;
+}
+
+#leyenda {
+  margin-top: 0.25rem;
+}
+
+.leyenda-subtitulo {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gris-texto);
+  margin-bottom: 0.3rem;
+}
+
+.leyenda-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.leyenda-lista li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.leyenda-color {
+  display: inline-block;
+  width: 22px;
+  height: 13px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.12);
+}
+
+/* ── Métricas ────────────────────────────────────────────────────────────── */
+.metricas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+/* Contenedor inyectado desde JS */
+#metricas-agregadas,
+#metricas-seccion {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.metrica {
+  background: var(--blanco);
+  border: 1px solid var(--gris-borde);
+  border-radius: 4px;
+  padding: 0.3rem 0.45rem;
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.metrica-valor {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--azul-medio);
+  line-height: 1.2;
+}
+
+.metrica-etiqueta {
+  font-size: 0.67rem;
+  color: var(--gris-texto);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-top: 0.1rem;
+}
+
+.metrica.comparacion .metrica-valor.positivo { color: #2a7f4f; }
+.metrica.comparacion .metrica-valor.negativo { color: #b03030; }
+
+/* ── Gráficas (Observable Plot) ─────────────────────────────────────────── */
+#grafica-agregada,
+#grafica-seccion {
+  width: 100%;
+  overflow: hidden;
+}
+
+#grafica-agregada svg,
+#grafica-seccion svg {
+  width: 100%;
+  height: auto;
+}
+
+/* ── Placeholder ─────────────────────────────────────────────────────────── */
+.placeholder-texto {
+  font-size: 0.78rem;
+  color: var(--gris-texto);
+  font-style: italic;
+  padding: 0.5rem 0;
+  grid-column: 1 / -1;
+}
+
+/* ── Tooltip MapLibre ────────────────────────────────────────────────────── */
+.maplibregl-popup-content {
+  font-family: system-ui, sans-serif;
+  font-size: 0.78rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  line-height: 1.5;
+  color: var(--texto);
+}
+
+.popup-titulo {
+  font-weight: 700;
+  font-size: 0.8rem;
+  margin-bottom: 0.15rem;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+#panel-variables::-webkit-scrollbar,
+#panel-agregados::-webkit-scrollbar {
+  width: 4px;
+}
+#panel-variables::-webkit-scrollbar-track,
+#panel-agregados::-webkit-scrollbar-track {
+  background: transparent;
+}
+#panel-variables::-webkit-scrollbar-thumb,
+#panel-agregados::-webkit-scrollbar-thumb {
+  background: var(--gris-borde);
+  border-radius: 2px;
 }
